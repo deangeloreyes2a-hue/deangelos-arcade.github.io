@@ -2,85 +2,52 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Hangman PRO</title>
+<title>Hangman ULTRA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { background:black; color:white; text-align:center; font-family:Arial; }
-#man { font-size:30px; white-space:pre; }
-#over {
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.85);
-  align-items:center; justify-content:center; flex-direction:column;
-}
-button { padding:10px 20px; font-size:18px; }
+body{background:black;color:white;text-align:center;font-family:Arial;}
+#man{font-size:30px;white-space:pre;}
+.key{padding:10px 14px;margin:4px;font-size:18px;}
 </style>
 </head>
-
 <body>
 
-<h2>🧠 HANGMAN PRO</h2>
+<h2>🧠 HANGMAN</h2>
 <pre id="man"></pre>
 <p id="word"></p>
 
-<div id="over">
-  <h1 id="result"></h1>
-  <button onclick="location.reload()">RESTART</button>
-</div>
+<div id="keys"></div>
 
 <script>
-function saveScore(game, score) {
-  let data = JSON.parse(localStorage.getItem(game) || "[]");
-  data.push(score);
-  data.sort((a,b)=>b-a);
-  data = data.slice(0,5);
-  localStorage.setItem(game, JSON.stringify(data));
+let stages=[""," O "," O \n | "," O \n/| "," O \n/|\\"," O \n/|\\\n/ "," O \n/|\\\n/ \\"];
+let words=["ARCADE","MOBILE","SHARK","PLANE"];
+let word=words[Math.floor(Math.random()*words.length)];
+let guessed=[],wrong=0;
+
+function draw(){
+  man.innerText=stages[wrong];
+  wordEl.innerText=word.split("").map(l=>guessed.includes(l)?l:"_").join(" ");
 }
+let man=document.getElementById("man");
+let wordEl=document.getElementById("word");
+let keys=document.getElementById("keys");
 
-function showLeaderboard(game, id) {
-  let data = JSON.parse(localStorage.getItem(game) || "[]");
-  document.getElementById(id).innerHTML =
-    "<h3>🏆 TOP SCORES</h3>" +
-    data.map((s,i)=>`#${i+1} → ${s}`).join("<br>");
-}
-
-let stages = [
-"",
-" O ",
-" O \n | ",
-" O \n/| ",
-" O \n/|\\",
-" O \n/|\\\n/ ",
-" O \n/|\\\n/ \\"
-];
-
-let words = ["ARCADE","DEANGELO","SHARK","PLANE","RACING"];
-let word = words[Math.floor(Math.random()*words.length)];
-let guessed = [], wrong = 0;
-
-function draw() {
-  document.getElementById("man").innerText = stages[wrong];
-  document.getElementById("word").innerText =
-    word.split("").map(l => guessed.includes(l)?l:"_").join(" ");
-}
-
-document.addEventListener("keydown", e => {
-  let l = e.key.toUpperCase();
-  if (!/^[A-Z]$/.test(l) || guessed.includes(l)) return;
-  guessed.push(l);
-
-  if (!word.includes(l)) wrong++;
-  draw();
-
-  if (wrong === stages.length - 1) end("YOU LOSE ❌");
-  if (!document.getElementById("word").innerText.includes("_")) end("YOU WIN 🎉");
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l=>{
+  let b=document.createElement("button");
+  b.innerText=l; b.className="key";
+  b.onclick=()=>press(l);
+  keys.appendChild(b);
 });
 
-function end(text) {
-  document.getElementById("result").innerText = text;
-  document.getElementById("over").style.display = "flex";
+function press(l){
+  if(guessed.includes(l))return;
+  guessed.push(l);
+  if(!word.includes(l))wrong++;
+  draw();
+  if(wrong===6)alert("YOU LOSE");
+  if(!wordEl.innerText.includes("_"))alert("YOU WIN");
 }
-
 draw();
 </script>
-
 </body>
 </html>
