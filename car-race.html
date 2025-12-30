@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Car Race</title>
+<style>
+body { background:#111; color:white; text-align:center; font-family:Arial; }
+#car { position:absolute; bottom:20px; left:140px; font-size:40px; }
+.road { width:300px; height:500px; background:#333; margin:auto; position:relative; }
+</style>
+</head>
+<body>
+
+<h2>🚗 CAR RACE</h2>
+<p>Use ⬅️ ➡️ Arrow Keys</p>
+
+<div class="road">
+  <div id="car">🚗</div>
+</div>
+
+<script>
+let car = document.getElementById("car");
+let x = 140;
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft" && x > 0) x -= 20;
+  if (e.key === "ArrowRight" && x < 260) x += 20;
+  car.style.left = x + "px";
+});
+</script>
+
+</body>
+</html>
