@@ -1,37 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Hangman</title>
 <style>
 body { background:black; color:white; text-align:center; font-family:Arial; }
-button { margin:5px; }
+#man { font-size:30px; white-space:pre; }
 </style>
 </head>
-<body>
 
+<body>
 <h2>🧠 HANGMAN</h2>
+<pre id="man"></pre>
 <p id="word"></p>
 <p id="msg"></p>
 
 <script>
-let words = ["CAR","PLANE","GAME","CODE"];
-let word = words[Math.floor(Math.random()*words.length)];
-let guessed = [];
+let stages = [
+"",
+" O ",
+" O \n | ",
+" O \n/| ",
+" O \n/|\\",
+" O \n/|\\\n/ ",
+" O \n/|\\\n/ \\"
+];
 
-function show() {
-  document.getElementById("word").innerHTML =
+let words = ["ARCADE","GAME","SHARK","PLANE"];
+let word = words[Math.floor(Math.random()*words.length)];
+let guessed = [], wrong = 0;
+
+function draw() {
+  document.getElementById("man").innerText = stages[wrong];
+  document.getElementById("word").innerText =
     word.split("").map(l => guessed.includes(l)?l:"_").join(" ");
 }
+
 document.addEventListener("keydown", e => {
-  guessed.push(e.key.toUpperCase());
-  show();
-  if (!document.getElementById("word").innerHTML.includes("_"))
+  let l = e.key.toUpperCase();
+  if (!word.includes(l)) wrong++;
+  guessed.push(l);
+  draw();
+
+  if (wrong === stages.length - 1) {
+    document.getElementById("msg").innerText = "YOU LOSE ❌";
+  }
+  if (!document.getElementById("word").innerText.includes("_")) {
     document.getElementById("msg").innerText = "YOU WIN 🎉";
+  }
 });
-show();
+
+draw();
 </script>
 
 <p>Type letters on keyboard</p>
-
 </body>
 </html>
