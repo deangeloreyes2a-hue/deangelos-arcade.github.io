@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Sharky Tweek</title>
 <style>
-body { background:#001f3f; color:white; text-align:center; }
-#shark { font-size:40px; position:absolute; left:140px; top:200px; }
+body { background:#001f3f; color:white; text-align:center; overflow:hidden; }
+#shark { font-size:40px; position:absolute; left:80px; top:200px; }
+.enemy { position:absolute; font-size:40px; right:-50px; }
 </style>
 </head>
-<body>
 
+<body>
 <h2>🦈 SHARKY TWEEK</h2>
-<p>Use ⬆️ ⬇️ arrows</p>
+<p>⬆️ ⬇️ to swim</p>
 
 <div id="shark">🦈</div>
 
@@ -23,7 +25,35 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowDown") y += 20;
   shark.style.top = y + "px";
 });
-</script>
 
+function spawnEnemy() {
+  let enemy = document.createElement("div");
+  enemy.className = "enemy";
+  enemy.innerText = "🐡";
+  enemy.style.top = Math.random() * 400 + "px";
+  document.body.appendChild(enemy);
+
+  let x = window.innerWidth;
+  let move = setInterval(() => {
+    x -= 4;
+    enemy.style.left = x + "px";
+
+    if (
+      x < 120 && x > 60 &&
+      Math.abs(enemy.offsetTop - shark.offsetTop) < 40
+    ) {
+      alert("💥 SHARK HIT!");
+      location.reload();
+    }
+
+    if (x < -50) {
+      enemy.remove();
+      clearInterval(move);
+    }
+  }, 30);
+}
+
+setInterval(spawnEnemy, 1600);
+</script>
 </body>
 </html>
