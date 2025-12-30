@@ -2,90 +2,52 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Sharky Tweek PRO</title>
+<title>Sharky ULTRA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { margin:0; background:#001f3f; color:white; overflow:hidden; }
-#shark { font-size:40px; position:absolute; left:80px; top:200px; }
-.enemy { position:absolute; font-size:40px; }
-#hud { position:fixed; top:10px; width:100%; text-align:center; }
-#over {
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.85);
-  align-items:center; justify-content:center; flex-direction:column;
-}
-button { padding:10px 20px; font-size:18px; }
+body{margin:0;background:#001f3f;color:white;overflow:hidden;text-align:center;}
+#shark{font-size:40px;position:absolute;left:80px;top:200px;}
+.enemy{position:absolute;font-size:40px;}
+button{font-size:22px;padding:15px 25px;margin:10px;}
 </style>
 </head>
-
 <body>
 
-<div id="hud">Score: <span id="score">0</span></div>
+<h2>🦈 SHARKY</h2>
+<p>Score: <span id="score">0</span></p>
 <div id="shark">🦈</div>
 
-<div id="over">
-  <h1>💥 SHARK DOWN</h1>
-  <p>Score: <span id="final"></span></p>
-  <button onclick="location.reload()">RESTART</button>
+<div>
+  <button onclick="swim(-20)">⬆️ UP</button>
+  <button onclick="swim(20)">⬇️ DOWN</button>
 </div>
 
 <script>
+let shark=document.getElementById("shark");
+let y=200,score=0;
 
-function saveScore(game, score) {
-  let data = JSON.parse(localStorage.getItem(game) || "[]");
-  data.push(score);
-  data.sort((a,b)=>b-a);
-  data = data.slice(0,5);
-  localStorage.setItem(game, JSON.stringify(data));
-}
+function swim(v){ y+=v; shark.style.top=y+"px"; }
 
-function showLeaderboard(game, id) {
-  let data = JSON.parse(localStorage.getItem(game) || "[]");
-  document.getElementById(id).innerHTML =
-    "<h3>🏆 TOP SCORES</h3>" +
-    data.map((s,i)=>`#${i+1} → ${s}`).join("<br>");
-}
-let shark = document.getElementById("shark");
-let y = 200, score = 0, speed = 4, playing = true;
-
-document.addEventListener("keydown", e => {
-  if (e.key === "ArrowUp") y -= 20;
-  if (e.key === "ArrowDown") y += 20;
-  shark.style.top = y + "px";
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowUp")swim(-20);
+  if(e.key==="ArrowDown")swim(20);
 });
 
-setInterval(() => {
-  if (!playing) return;
-  score++;
-  if (score % 15 === 0) speed++;
-  document.getElementById("score").innerText = score;
-}, 1000);
+setInterval(()=>{score++;document.getElementById("score").innerText=score;},1000);
 
-function spawnEnemy() {
-  if (!playing) return;
-  let e = document.createElement("div");
-  e.className = "enemy";
-  e.innerText = "🐡";
-  e.style.top = Math.random()*400 + "px";
+function enemy(){
+  let e=document.createElement("div");
+  e.className="enemy"; e.innerText="🐡";
+  e.style.top=Math.random()*400+"px";
   document.body.appendChild(e);
-
-  let x = window.innerWidth;
-  let move = setInterval(() => {
-    if (!playing) return;
-    x -= speed;
-    e.style.left = x + "px";
-
-    if (x < 120 && x > 60 && Math.abs(e.offsetTop - y) < 40) end();
-    if (x < -50) { e.remove(); clearInterval(move); }
-  }, 30);
+  let x=window.innerWidth;
+  let m=setInterval(()=>{
+    x-=4;e.style.left=x+"px";
+    if(x<120&&x>60&&Math.abs(e.offsetTop-y)<40){alert("GAME OVER");location.reload();}
+    if(x<-50){e.remove();clearInterval(m);}
+  },30);
 }
-setInterval(spawnEnemy, 1400);
-
-function end() {
-  playing = false;
-  document.getElementById("final").innerText = score;
-  document.getElementById("over").style.display = "flex";
-}
+setInterval(enemy,1500);
 </script>
 </body>
 </html>
