@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sharky Tweek</title>
+<style>
+body { background:#001f3f; color:white; text-align:center; }
+#shark { font-size:40px; position:absolute; left:140px; top:200px; }
+</style>
+</head>
+<body>
+
+<h2>🦈 SHARKY TWEEK</h2>
+<p>Use ⬆️ ⬇️ arrows</p>
+
+<div id="shark">🦈</div>
+
+<script>
+let shark = document.getElementById("shark");
+let y = 200;
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowUp") y -= 20;
+  if (e.key === "ArrowDown") y += 20;
+  shark.style.top = y + "px";
+});
+</script>
+
+</body>
+</html>
