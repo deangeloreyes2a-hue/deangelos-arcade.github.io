@@ -1,32 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Car Race</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { background:#111; color:white; text-align:center; font-family:Arial; }
-#car { position:absolute; bottom:20px; left:140px; font-size:40px; }
-.road { width:300px; height:500px; background:#333; margin:auto; position:relative; }
+body { background:black; color:#00ffe7; text-align:center; font-family:Arial; }
+#score { margin:10px; font-size:18px; }
+.road {
+  width:300px; height:500px; background:#222;
+  margin:auto; position:relative; overflow:hidden;
+  box-shadow:0 0 30px #00ffe7;
+}
+#car, .enemy {
+  position:absolute; font-size:40px;
+}
+#car { bottom:20px; left:130px; }
+.enemy { top:-40px; }
 </style>
 </head>
+
 <body>
-
 <h2>🚗 CAR RACE</h2>
-<p>Use ⬅️ ➡️ Arrow Keys</p>
+<div id="score">Score: 0</div>
 
-<div class="road">
+<div class="road" id="road">
   <div id="car">🚗</div>
 </div>
 
 <script>
 let car = document.getElementById("car");
-let x = 140;
+let road = document.getElementById("road");
+let x = 130, score = 0;
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft" && x > 0) x -= 20;
   if (e.key === "ArrowRight" && x < 260) x += 20;
   car.style.left = x + "px";
 });
-</script>
 
+setInterval(() => {
+  score++;
+  document.getElementById("score").innerText = "Score: " + score;
+}, 1000);
+
+function spawnEnemy() {
+  let enemy = document.createElement("div");
+  enemy.className = "enemy";
+  enemy.innerText = "🚓";
+  enemy.style.left = Math.floor(Math.random() * 260) + "px";
+  road.appendChild(enemy);
+
+  let y = -40;
+  let fall = setInterval(() => {
+    y += 5;
+    enemy.style.top = y + "px";
+
+    if (y > 460) {
+      enemy.remove();
+      clearInterval(fall);
+    }
+
+    if (
+      y > 420 &&
+      Math.abs(enemy.offsetLeft - car.offsetLeft) < 40
+    ) {
+      alert("💥 GAME OVER\nScore: " + score);
+      location.reload();
+    }
+  }, 30);
+}
+
+setInterval(spawnEnemy, 1200);
+</script>
 </body>
 </html>
+
