@@ -2,23 +2,36 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Sharky Tweek</title>
+<title>Sharky Tweek PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { background:#001f3f; color:white; text-align:center; overflow:hidden; }
+body { margin:0; background:#001f3f; color:white; overflow:hidden; }
 #shark { font-size:40px; position:absolute; left:80px; top:200px; }
-.enemy { position:absolute; font-size:40px; right:-50px; }
+.enemy { position:absolute; font-size:40px; }
+#hud { position:fixed; top:10px; width:100%; text-align:center; }
+#over {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85);
+  align-items:center; justify-content:center; flex-direction:column;
+}
+button { padding:10px 20px; font-size:18px; }
 </style>
 </head>
 
 <body>
-<h2>🦈 SHARKY TWEEK</h2>
-<p>⬆️ ⬇️ to swim</p>
 
+<div id="hud">Score: <span id="score">0</span></div>
 <div id="shark">🦈</div>
+
+<div id="over">
+  <h1>💥 SHARK DOWN</h1>
+  <p>Score: <span id="final"></span></p>
+  <button onclick="location.reload()">RESTART</button>
+</div>
 
 <script>
 let shark = document.getElementById("shark");
-let y = 200;
+let y = 200, score = 0, speed = 4, playing = true;
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowUp") y -= 20;
@@ -26,34 +39,38 @@ document.addEventListener("keydown", e => {
   shark.style.top = y + "px";
 });
 
+setInterval(() => {
+  if (!playing) return;
+  score++;
+  if (score % 15 === 0) speed++;
+  document.getElementById("score").innerText = score;
+}, 1000);
+
 function spawnEnemy() {
-  let enemy = document.createElement("div");
-  enemy.className = "enemy";
-  enemy.innerText = "🐡";
-  enemy.style.top = Math.random() * 400 + "px";
-  document.body.appendChild(enemy);
+  if (!playing) return;
+  let e = document.createElement("div");
+  e.className = "enemy";
+  e.innerText = "🐡";
+  e.style.top = Math.random()*400 + "px";
+  document.body.appendChild(e);
 
   let x = window.innerWidth;
   let move = setInterval(() => {
-    x -= 4;
-    enemy.style.left = x + "px";
+    if (!playing) return;
+    x -= speed;
+    e.style.left = x + "px";
 
-    if (
-      x < 120 && x > 60 &&
-      Math.abs(enemy.offsetTop - shark.offsetTop) < 40
-    ) {
-      alert("💥 SHARK HIT!");
-      location.reload();
-    }
-
-    if (x < -50) {
-      enemy.remove();
-      clearInterval(move);
-    }
+    if (x < 120 && x > 60 && Math.abs(e.offsetTop - y) < 40) end();
+    if (x < -50) { e.remove(); clearInterval(move); }
   }, 30);
 }
+setInterval(spawnEnemy, 1400);
 
-setInterval(spawnEnemy, 1600);
+function end() {
+  playing = false;
+  document.getElementById("final").innerText = score;
+  document.getElementById("over").style.display = "flex";
+}
 </script>
 </body>
 </html>
