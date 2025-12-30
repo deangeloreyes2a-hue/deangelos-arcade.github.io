@@ -2,101 +2,50 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Tappy Plane PRO</title>
+<title>Tappy Plane ULTRA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { margin:0; background:#87ceeb; text-align:center; overflow:hidden; }
-#plane { font-size:40px; position:absolute; left:80px; top:200px; }
-.pipe { position:absolute; font-size:50px; }
-#hud { position:fixed; top:10px; width:100%; font-size:18px; }
-#over {
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.85); color:white;
-  align-items:center; justify-content:center; flex-direction:column;
-}
-button { padding:10px 20px; font-size:18px; }
+body{margin:0;background:#87ceeb;text-align:center;overflow:hidden;}
+#plane{font-size:40px;position:absolute;left:80px;top:200px;}
+.pipe{position:absolute;font-size:50px;}
+button{font-size:24px;padding:15px 30px;margin:15px;}
 </style>
 </head>
-
 <body>
 
-<div id="hud">Score: <span id="score">0</span></div>
+<h2>✈️ TAPPY PLANE</h2>
+<p>Score: <span id="score">0</span></p>
 <div id="plane">✈️</div>
-
-<div id="over">
-  <h1>💥 GAME OVER</h1>
-  <p>Score: <span id="final"></span></p>
-  <button onclick="location.reload()">RESTART</button>
-</div>
+<button onclick="fly()">TAP ⬆️</button>
 
 <script>
-function saveScore(game, score) {
-  let data = JSON.parse(localStorage.getItem(game) || "[]");
-  data.push(score);
-  data.sort((a,b)=>b-a);
-  data = data.slice(0,5);
-  localStorage.setItem(game, JSON.stringify(data));
-}
+let plane=document.getElementById("plane");
+let y=200,score=0;
 
-function showLeaderboard(game, id) {
-  let data = JSON.parse(localStorage.getItem(game) || "[]");
-  document.getElementById(id).innerHTML =
-    "<h3>🏆 TOP SCORES</h3>" +
-    data.map((s,i)=>`#${i+1} → ${s}`).join("<br>");
-}
+function fly(){ y-=40; }
 
-let plane = document.getElementById("plane");
-let y = 200, score = 0, speed = 4, playing = true;
+document.addEventListener("keydown",e=>{ if(e.code==="Space")fly(); });
 
-setInterval(() => {
-  if (!playing) return;
-  y += 4;
-  plane.style.top = y + "px";
-  if (y > window.innerHeight) end();
-}, 30);
+setInterval(()=>{
+  y+=4; plane.style.top=y+"px";
+  if(y>window.innerHeight){alert("GAME OVER");location.reload();}
+},30);
 
-document.addEventListener("keydown", e => {
-  if (e.code === "Space") y -= 40;
-});
-document.addEventListener("click", () => y -= 40);
+setInterval(()=>{score++;document.getElementById("score").innerText=score;},1000);
 
-setInterval(() => {
-  if (!playing) return;
-  score++;
-  if (score % 10 === 0) speed++;
-  document.getElementById("score").innerText = score;
-}, 1000);
-
-function spawnPipe() {
-  if (!playing) return;
-  let p = document.createElement("div");
-  p.className = "pipe";
-  p.innerText = "🧱";
-  p.style.top = Math.random()*300 + "px";
+function pipe(){
+  let p=document.createElement("div");
+  p.className="pipe"; p.innerText="🧱";
+  p.style.top=Math.random()*300+"px";
   document.body.appendChild(p);
-
-  let x = window.innerWidth;
-  let move = setInterval(() => {
-    if (!playing) return;
-    x -= speed;
-    p.style.left = x + "px";
-
-    if (x < 120 && x > 60 && Math.abs(p.offsetTop - y) < 50) end();
-    if (x < -50) { p.remove(); clearInterval(move); }
-  }, 30);
+  let x=window.innerWidth;
+  let m=setInterval(()=>{
+    x-=5;p.style.left=x+"px";
+    if(x<120&&x>60&&Math.abs(p.offsetTop-y)<50){alert("GAME OVER");location.reload();}
+    if(x<-60){p.remove();clearInterval(m);}
+  },30);
 }
-setInterval(spawnPipe, 1500);
-
-function end() {
-  playing = false;
-  document.getElementById("final").innerText = score;
-  document.getElementById("over").style.display = "flex";
-}
+setInterval(pipe,1500);
 </script>
 </body>
-  <audio id="coin" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
-<audio id="hit" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-<audio id="win" src="https://actions.google.com/sounds/v1/cartoon/ta_da.ogg"></audio>
-
 </html>
-      
