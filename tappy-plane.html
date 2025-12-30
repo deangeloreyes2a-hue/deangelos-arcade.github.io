@@ -2,30 +2,42 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Tappy Plane</title>
+<title>Tappy Plane PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { background:#87ceeb; text-align:center; overflow:hidden; }
+body { margin:0; background:#87ceeb; text-align:center; overflow:hidden; }
 #plane { font-size:40px; position:absolute; left:80px; top:200px; }
-.pipe {
-  position:absolute; right:-60px; font-size:50px;
+.pipe { position:absolute; font-size:50px; }
+#hud { position:fixed; top:10px; width:100%; font-size:18px; }
+#over {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85); color:white;
+  align-items:center; justify-content:center; flex-direction:column;
 }
+button { padding:10px 20px; font-size:18px; }
 </style>
 </head>
 
 <body>
-<h2>✈️ TAPPY PLANE</h2>
-<p>Press SPACE or TAP</p>
 
+<div id="hud">Score: <span id="score">0</span></div>
 <div id="plane">✈️</div>
+
+<div id="over">
+  <h1>💥 GAME OVER</h1>
+  <p>Score: <span id="final"></span></p>
+  <button onclick="location.reload()">RESTART</button>
+</div>
 
 <script>
 let plane = document.getElementById("plane");
-let y = 200;
+let y = 200, score = 0, speed = 4, playing = true;
 
 setInterval(() => {
+  if (!playing) return;
   y += 4;
   plane.style.top = y + "px";
-  if (y > window.innerHeight) gameOver();
+  if (y > window.innerHeight) end();
 }, 30);
 
 document.addEventListener("keydown", e => {
@@ -33,36 +45,38 @@ document.addEventListener("keydown", e => {
 });
 document.addEventListener("click", () => y -= 40);
 
+setInterval(() => {
+  if (!playing) return;
+  score++;
+  if (score % 10 === 0) speed++;
+  document.getElementById("score").innerText = score;
+}, 1000);
+
 function spawnPipe() {
-  let pipe = document.createElement("div");
-  pipe.className = "pipe";
-  pipe.innerText = "🧱";
-  pipe.style.top = Math.random() * 300 + "px";
-  document.body.appendChild(pipe);
+  if (!playing) return;
+  let p = document.createElement("div");
+  p.className = "pipe";
+  p.innerText = "🧱";
+  p.style.top = Math.random()*300 + "px";
+  document.body.appendChild(p);
 
   let x = window.innerWidth;
   let move = setInterval(() => {
-    x -= 5;
-    pipe.style.left = x + "px";
+    if (!playing) return;
+    x -= speed;
+    p.style.left = x + "px";
 
-    if (
-      x < 120 && x > 60 &&
-      Math.abs(pipe.offsetTop - plane.offsetTop) < 50
-    ) gameOver();
-
-    if (x < -60) {
-      pipe.remove();
-      clearInterval(move);
-    }
+    if (x < 120 && x > 60 && Math.abs(p.offsetTop - y) < 50) end();
+    if (x < -50) { p.remove(); clearInterval(move); }
   }, 30);
 }
-
-function gameOver() {
-  alert("💥 GAME OVER");
-  location.reload();
-}
-
 setInterval(spawnPipe, 1500);
+
+function end() {
+  playing = false;
+  document.getElementById("final").innerText = score;
+  document.getElementById("over").style.display = "flex";
+}
 </script>
 </body>
 </html>
