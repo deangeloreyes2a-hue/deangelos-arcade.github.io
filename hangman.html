@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hangman</title>
+<style>
+body { background:black; color:white; text-align:center; font-family:Arial; }
+button { margin:5px; }
+</style>
+</head>
+<body>
+
+<h2>🧠 HANGMAN</h2>
+<p id="word"></p>
+<p id="msg"></p>
+
+<script>
+let words = ["CAR","PLANE","GAME","CODE"];
+let word = words[Math.floor(Math.random()*words.length)];
+let guessed = [];
+
+function show() {
+  document.getElementById("word").innerHTML =
+    word.split("").map(l => guessed.includes(l)?l:"_").join(" ");
+}
+document.addEventListener("keydown", e => {
+  guessed.push(e.key.toUpperCase());
+  show();
+  if (!document.getElementById("word").innerHTML.includes("_"))
+    document.getElementById("msg").innerText = "YOU WIN 🎉";
+});
+show();
+</script>
+
+<p>Type letters on keyboard</p>
+
+</body>
+</html>
