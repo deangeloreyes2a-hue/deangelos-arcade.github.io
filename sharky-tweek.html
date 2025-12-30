@@ -30,6 +30,22 @@ button { padding:10px 20px; font-size:18px; }
 </div>
 
 <script>
+  <script>
+function saveScore(game, score) {
+  let data = JSON.parse(localStorage.getItem(game) || "[]");
+  data.push(score);
+  data.sort((a,b)=>b-a);
+  data = data.slice(0,5);
+  localStorage.setItem(game, JSON.stringify(data));
+}
+
+function showLeaderboard(game, id) {
+  let data = JSON.parse(localStorage.getItem(game) || "[]");
+  document.getElementById(id).innerHTML =
+    "<h3>🏆 TOP SCORES</h3>" +
+    data.map((s,i)=>`#${i+1} → ${s}`).join("<br>");
+}
+</script>
 let shark = document.getElementById("shark");
 let y = 200, score = 0, speed = 4, playing = true;
 
