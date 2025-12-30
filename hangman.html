@@ -2,18 +2,29 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Hangman</title>
+<title>Hangman PRO</title>
 <style>
 body { background:black; color:white; text-align:center; font-family:Arial; }
 #man { font-size:30px; white-space:pre; }
+#over {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85);
+  align-items:center; justify-content:center; flex-direction:column;
+}
+button { padding:10px 20px; font-size:18px; }
 </style>
 </head>
 
 <body>
-<h2>🧠 HANGMAN</h2>
+
+<h2>🧠 HANGMAN PRO</h2>
 <pre id="man"></pre>
 <p id="word"></p>
-<p id="msg"></p>
+
+<div id="over">
+  <h1 id="result"></h1>
+  <button onclick="location.reload()">RESTART</button>
+</div>
 
 <script>
 let stages = [
@@ -26,7 +37,7 @@ let stages = [
 " O \n/|\\\n/ \\"
 ];
 
-let words = ["ARCADE","GAME","SHARK","PLANE"];
+let words = ["ARCADE","DEANGELO","SHARK","PLANE","RACING"];
 let word = words[Math.floor(Math.random()*words.length)];
 let guessed = [], wrong = 0;
 
@@ -38,21 +49,23 @@ function draw() {
 
 document.addEventListener("keydown", e => {
   let l = e.key.toUpperCase();
-  if (!word.includes(l)) wrong++;
+  if (!/^[A-Z]$/.test(l) || guessed.includes(l)) return;
   guessed.push(l);
+
+  if (!word.includes(l)) wrong++;
   draw();
 
-  if (wrong === stages.length - 1) {
-    document.getElementById("msg").innerText = "YOU LOSE ❌";
-  }
-  if (!document.getElementById("word").innerText.includes("_")) {
-    document.getElementById("msg").innerText = "YOU WIN 🎉";
-  }
+  if (wrong === stages.length - 1) end("YOU LOSE ❌");
+  if (!document.getElementById("word").innerText.includes("_")) end("YOU WIN 🎉");
 });
+
+function end(text) {
+  document.getElementById("result").innerText = text;
+  document.getElementById("over").style.display = "flex";
+}
 
 draw();
 </script>
 
-<p>Type letters on keyboard</p>
 </body>
 </html>
