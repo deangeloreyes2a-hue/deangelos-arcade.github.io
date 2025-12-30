@@ -2,59 +2,126 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Car Race</title>
+<title>Car Race PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body { background:black; color:#00ffe7; text-align:center; font-family:Arial; }
-#score { margin:10px; font-size:18px; }
+body {
+  background:black;
+  color:#00ffe7;
+  text-align:center;
+  font-family:Arial;
+}
+
+h2 { text-shadow:0 0 10px #00ffe7; }
+
+#hud {
+  display:flex;
+  justify-content:space-around;
+  margin:10px;
+  font-size:18px;
+}
+
 .road {
-  width:300px; height:500px; background:#222;
-  margin:auto; position:relative; overflow:hidden;
+  width:300px;
+  height:500px;
+  background:#222;
+  margin:auto;
+  position:relative;
+  overflow:hidden;
   box-shadow:0 0 30px #00ffe7;
 }
+
 #car, .enemy {
-  position:absolute; font-size:40px;
+  position:absolute;
+  font-size:40px;
 }
-#car { bottom:20px; left:130px; }
-.enemy { top:-40px; }
+
+#car {
+  bottom:20px;
+  left:130px;
+}
+
+.enemy { top:-50px; }
+
+#gameOver {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.9);
+  color:white;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+
+button {
+  padding:10px 20px;
+  font-size:18px;
+  margin-top:10px;
+}
 </style>
 </head>
 
 <body>
-<h2>🚗 CAR RACE</h2>
-<div id="score">Score: 0</div>
+
+<h2>🚗 CAR RACE PRO</h2>
+<div id="hud">
+  <div id="score">Score: 0</div>
+  <div id="level">Level: 1</div>
+</div>
 
 <div class="road" id="road">
   <div id="car">🚗</div>
 </div>
 
+<div id="gameOver">
+  <h1>💥 GAME OVER</h1>
+  <p id="finalScore"></p>
+  <button onclick="location.reload()">RESTART</button>
+</div>
+
+<audio id="hit" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+
 <script>
 let car = document.getElementById("car");
 let road = document.getElementById("road");
-let x = 130, score = 0;
+let x = 130;
+let score = 0;
+let level = 1;
+let speed = 4;
+let playing = true;
 
 document.addEventListener("keydown", e => {
+  if (!playing) return;
   if (e.key === "ArrowLeft" && x > 0) x -= 20;
   if (e.key === "ArrowRight" && x < 260) x += 20;
   car.style.left = x + "px";
 });
 
 setInterval(() => {
+  if (!playing) return;
   score++;
+  if (score % 20 === 0) {
+    level++;
+    speed++;
+  }
   document.getElementById("score").innerText = "Score: " + score;
+  document.getElementById("level").innerText = "Level: " + level;
 }, 1000);
 
 function spawnEnemy() {
+  if (!playing) return;
   let enemy = document.createElement("div");
   enemy.className = "enemy";
   enemy.innerText = "🚓";
-  enemy.style.left = Math.floor(Math.random() * 260) + "px";
+  enemy.style.left = Math.random() * 260 + "px";
   road.appendChild(enemy);
 
   let y = -40;
   let fall = setInterval(() => {
-    y += 5;
+    if (!playing) return;
+    y += speed;
     enemy.style.top = y + "px";
 
     if (y > 460) {
@@ -66,14 +133,23 @@ function spawnEnemy() {
       y > 420 &&
       Math.abs(enemy.offsetLeft - car.offsetLeft) < 40
     ) {
-      alert("💥 GAME OVER\nScore: " + score);
-      location.reload();
+      endGame();
     }
   }, 30);
 }
 
+function endGame() {
+  playing = false;
+  document.getElementById("hit").play();
+  document.getElementById("finalScore").innerText =
+    "Final Score: " + score;
+  document.getElementById("gameOver").style.display = "flex";
+}
+
 setInterval(spawnEnemy, 1200);
 </script>
+
 </body>
 </html>
+
 
