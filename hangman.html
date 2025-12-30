@@ -27,7 +27,6 @@ button { padding:10px 20px; font-size:18px; }
 </div>
 
 <script>
-  <script>
 function saveScore(game, score) {
   let data = JSON.parse(localStorage.getItem(game) || "[]");
   data.push(score);
@@ -42,7 +41,6 @@ function showLeaderboard(game, id) {
     "<h3>🏆 TOP SCORES</h3>" +
     data.map((s,i)=>`#${i+1} → ${s}`).join("<br>");
 }
-</script>
 
 let stages = [
 "",
@@ -86,9 +84,3 @@ draw();
 
 </body>
 </html>
-<audio id="coin" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
-<audio id="hit" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-<audio id="win" src="https://actions.google.com/sounds/v1/cartoon/ta_da.ogg"></audio>
-coin.play(); // score
-hit.play();  // crash
-win.play();  // win
